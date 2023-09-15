@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Secure Vaulted Card Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link rel="stylesheet" href="/style2.css" type="text/css">
+</head>
+
+<body>
+    <div id="checkout-page" class="mx-auto">
+        <form id="payment-form" class="row g-3" action="/3DS-vault-sale" method="post">
+            <input type="hidden" id="nonce" name="payment_method_nonce" />
+            <input hidden id='clientToken' value='<%= clientToken %>'>
+            <div class="col-12">
+                <button id="submit-button" class="btn btn-success">Purchase</button>
+            </div>
+        </form>
+
+        <script src="https://js.braintreegateway.com/web/3.84.0/js/client.min.js"></script>
+        <script src='https://js.braintreegateway.com/web/3.84.0/js/three-d-secure.min.js'></script>
+
+        <script type="text/javascript">
+
+            const submitButton = document.querySelector('#submit-button');
+            const form = document.getElementById("payment-form")
+            const clientToken = document.getElementById('clientToken').value
+
+            var threeDSecure;
+
+            var threeDSecureParameters = { 
+                amount: "135.00",
+                nonce: "2ab11034-c0ee-01e3-762b-226bdf21f09f",
+                email: "fred@bedrock.com",
+                billingAddress: {
+                    givenName: "Fred",
+                    surname: "Flintstone",
+                    phoneNumber: "1234567890",
+                    streetAddress: "123 Main St",
+                    extendedAddress: "#5",
+                    locality: "Chicago",
+
+                    postalCode: "12345",
+                    countryCodeAlpha2: "US",
+                },
+                challengeRequested: true,
+                onLookupComplete: function (data, next) {
+                    // use `data` here, then call `next()`
+                    console.log(`Data is \n` + data)
+                    next();
+                }
+            }
+
+            braintree.client.create({
+                authorization: clientToken
+            }, (clientErr, clientInstance) => {
+                if (clientErr) {
+                    return;
+                }
+
+                braintree.threeDSecure.create({
+                    version: 2,
+                    client: clientInstance
+                }, (threeDSecureErr, threeDSecureInstance) => {
+                    if (threeDSecureErr) {
+                        console.log(threeDSecureErr)
+                        return;
+                    }
+                    threeDSecure = threeDSecureInstance;
+                });
+            });
+
+            submitButton.addEventListener('click', (event) => {
+                event.preventDefault()
+                threeDSecure.verifyCard(threeDSecureParameters, (err, response) => {
+                    if (err) {
+                        console.log(threeDSecureParameters)
+                        console.log(err)
+                        return;
+                    }
+                    document.getElementById('nonce').value = response;
+                    console.log(response)
+                    // form.submit();
+                });
+            })
+
+        </script>
+</body>
+
+</html>

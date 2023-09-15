@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head.ejs') %>
+
+<body>
+    <div id="homePage" class="container-fluid">
+        <h1>Braintree Support Integration Training</h1>
+        <a id="homeButton" href="/"><i class="fa fa-home"></i></a>
+        <hr />
+        <main>
+            <% if (feedback.status==="SUCCESS" ) { %>
+                <h2>
+                    You've successfully generated your client token! &nbsp;<i class="fa fa-check"
+                        style="font-size: 48px; color: green"></i>
+                </h2>
+                <div id="tokenContainer">
+                    <p>Below is the client token generated. The client token is Base64 encoded. It can be
+                        decoded to show gateway details.
+                        <button id="decodeButton" title="Decode client token">&#128269;</button>
+                        <button hidden id="reverseButton" title="Show client token">&#128273;</button>
+                    </p>
+                    <p>Proceed to <a href="/drop-in">next task.</a></p>
+                    <code id="token">
+                         <%= feedback.token %>
+                    </code>
+                    <code hidden id="decoded"><%= feedback.decoded %></code>
+                </div>
+                <% } %>
+
+                    <% if (feedback.status==="FAILURE" ) { %>
+                            <h5>
+                                Double check you've&nbsp;<a target="_blank"
+                                  href="https://developer.paypal.com/braintree/docs/reference/request/client-token/generate/node">entered
+                                  your client token generate code</a>&nbsp;correctly.
+                              </h5>
+                        <% } %>
+        </main>
+    </div>
+    <script>
+        var decodeToken = document.getElementById("decodeButton")
+        var reverse = document.getElementById("reverseButton")
+        var tokenBlock = document.getElementById("token")
+        var decodedBlock = document.getElementById("decoded")
+
+        decodeToken.addEventListener("click", () => {
+            decodeToken.setAttribute("hidden", true)
+            reverse.removeAttribute("hidden", true)
+
+            tokenBlock.setAttribute("hidden", true)
+            decodedBlock.removeAttribute("hidden", true)
+        })
+
+        reverse.addEventListener("click", () => {
+            decodeToken.removeAttribute("hidden", true)
+            reverse.setAttribute("hidden", true)
+
+            decodedBlock.setAttribute("hidden", true)
+            tokenBlock.removeAttribute("hidden", true)
+        })
+
+    </script>
+</body>
+
+</html>

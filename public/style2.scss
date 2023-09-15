@@ -1,0 +1,113 @@
+#homePage {
+    text-align: center;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  #homePage h1 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    height: 10vh;
+    text-decoration: underline;
+  }
+  
+  #homePage main section {
+    margin: auto;
+    width: 80%;
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: (minmax(30%, 1fr))[auto-fit];
+        grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+    -webkit-column-gap: 20px;
+            column-gap: 20px;
+    row-gap: 20px;
+  }
+  
+  #homePage main section a {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    min-height: 10vh;
+  }
+  
+  #checkout-page {
+    padding: 3%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  
+  #checkout-page table {
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+  
+  #checkout-page form {
+    width: 55%;
+  }
+  
+  #checkout-page form label {
+    font-weight: bold;
+    margin-bottom: 2%;
+  }
+  
+  .post-checkout {
+    height: 100vh;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+  
+  .post-checkout h3 {
+    color: green;
+  }
+  
+  h5 {
+    margin: 5% 0 0 0;
+  }
+  
+  .docs-card {
+    background-color: white;
+    margin-top: 5%;
+    -webkit-box-shadow: 4px 4px 4px 4px silver;
+            box-shadow: 4px 4px 4px 4px silver;
+    padding: 1%;
+  }
+
+  #dropin-container {
+    width: 55%;
+  }

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Payment Methods</title>
+</head>
+
+<body>
+    <div style="height: 100vh; width:100%; display:flex; justify-content:center; align-items:center">
+        <button id="ideal-button">IDEAL</button>&nbsp;&nbsp;
+        <button id="sofort-button">SOFORT</button>&nbsp;&nbsp;
+        <button id="giropay-button">GIROPAY</button>&nbsp;&nbsp;
+        <button id="alipay-button">ALIPAY</button>&nbsp;&nbsp;
+        <button id="trustly-button">TRUSTLY</button>
+        <input hidden id='clientToken' value='<%= clientToken %>'>
+    </div>
+
+    <script src="https://js.braintreegateway.com/web/3.92.1/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.92.1/js/local-payment.min.js"></script>
+    <script>
+
+
+        var clientToken = document.getElementById('clientToken').value
+
+        var localPaymentInstance;
+
+        braintree.client.create({
+            authorization: clientToken
+        }, (clientErr, clientInstance) => {
+
+            if (clientErr) {
+                console.error('Error creating client:', clientErr);
+                return;
+            }
+
+            braintree.localPayment.create({
+                client: clientInstance,
+                merchantAccountId: "oasiscafe-EUR"
+            }, (localPaymentErr, paymentInstance) => {
+                if (localPaymentErr) {
+                    console.error('Error creating local payment:', localPaymentErr);
+                    return;
+                }
+                localPaymentInstance = paymentInstance;
+            });
+
+        });
+    </script>
+    <script>
+        var idealButton = document.getElementById('ideal-button');
+        var giropayButton = document.getElementById('giropay-button');
+        var sofortButton = document.getElementById('sofort-button');
+        var alipayButton = document.getElementById('alipay-button');
+        var trustlyButton = document.getElementById('trustly-button');
+
+        const createLocalPaymentClickListener = (type) => {
+            return function (event) {
+                event.preventDefault();
+
+                localPaymentInstance.startPayment({
+                    paymentType: type,
+                    amount: '10.67',
+                    fallback: {
+                        url: 'http://localhost:4000/lpm',
+                        buttonText: 'Complete Payment'
+                    },
+                    currencyCode: 'EUR',
+                    givenName: 'Joe',
+                    surname: 'Doe',
+                    address: {
+                        countryCode: 'NL'
+                    },
+                    onPaymentStart: (data, start) => {
+                        console.log(data)
+                        start();
+                    }
+                }, (startPaymentError, payload) => {
+                    if (startPaymentError) {
+                        if (startPaymentError.code === 'LOCAL_PAYMENT_POPUP_CLOSED') {
+                            console.error('Customer closed Local Payment popup.');
+                        } else {
+                            console.error('Error!', startPaymentError);
+                        }
+                    } else {
+                        console.log(payload.nonce);
+                    }
+                });
+            };
+        }
+
+        idealButton.addEventListener('click', createLocalPaymentClickListener('ideal'));
+        sofortButton.addEventListener('click', createLocalPaymentClickListener('sofort'));
+        giropayButton.addEventListener('click', createLocalPaymentClickListener('giropay'));
+        alipayButton.addEventListener('click', createLocalPaymentClickListener('alipay'));
+        trustlyButton.addEventListener('click', createLocalPaymentClickListener('trustly'));
+
+    </script>
+
+</html>

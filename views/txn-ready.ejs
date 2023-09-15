@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head.ejs') %>
+
+<body>
+    <div id="homePage" class="container-fluid">
+        <h1>Braintree Support Integration Training</h1>
+        <a id="homeButton" href="/"><i class="fa fa-home"></i></a>
+        <hr />
+        <main>
+                <h2>
+                    You've successfully tokenized via the Drop-in UI! &nbsp;<i class="fa fa-check"
+                        style="font-size: 48px; color: green"></i>
+                </h2>
+                <div style="color: white;">
+                    <p>Here's the payment method nonce generated: <code><%= nonce %></code></p>
+                    <p>Now you can <a href="/">create a transaction.</a></p>
+                </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

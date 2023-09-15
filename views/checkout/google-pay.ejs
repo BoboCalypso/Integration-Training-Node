@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Pay</title>
+</head>
+
+<body>
+    <form id="payment-form" class="row g-3" action="/transaction-sale" method="post">
+        <span hidden id="clientToken">
+            <%= clientToken %>
+        </span>
+        <div id="google-pay-button">
+        </div>
+    </form>
+
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.85.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.85.3/js/google-payment.min.js"></script>
+
+    <script>
+        var CLIENT_AUTHORIZATION = document.getElementById("clientToken").innerText
+        var paymentsClient = new google.payments.api.PaymentsClient({
+            environment: 'TEST'
+        });
+
+        console.log(CLIENT_AUTHORIZATION)
+
+        braintree.client.create({
+            authorization: CLIENT_AUTHORIZATION
+        }, (clientErr, clientInstance) => {
+
+            braintree.googlePayment.create({
+                client: clientInstance,
+                googlePayVersion: 2,
+                merchantId: "merchant-id-from-google"
+            }, (googlePaymentErr, googlePaymentInstance) => {
+
+                const button = paymentsClient.createButton({
+                    buttonColor: "default",
+                    buttonType: "checkout",
+                    onClick: () => { }
+                })
+
+                paymentsClient.isReadyToPay({
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
+                    existingPaymentMethodRequired: true,
+                    shippingAddressRequired: true,
+                }).then((response) => {
+                    if (response.result) {
+
+                        button.addEventListener('click', (event) => {
+                            event.preventDefault();
+
+                            var paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
+                                transactionInfo: {
+                                    currencyCode: 'USD',
+                                    totalPriceStatus: 'FINAL',
+                                    totalPrice: '100.00'
+                                }
+                            });
+
+                            var cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
+
+                            cardPaymentMethod.parameters.billingAddressRequired = true;
+                            cardPaymentMethod.parameters.billingAddressParameters = {
+                                format: 'FULL',
+                                phoneNumberRequired: true
+                            };
+
+                            paymentsClient.loadPaymentData(paymentDataRequest).then((paymentData) => {
+                                console.log(paymentData)
+                                googlePaymentInstance.parseResponse(paymentData, (err, result) => {
+                                    console.log(result)
+                                    if (err) console.log(err)
+                                });
+                            }).catch((err) => console.log(err)
+                            );
+                        });
+
+                    }
+                }).catch((err) => console.log(err)
+                );
+            });
+        });
+    </script>
+</body>
+
+</html>

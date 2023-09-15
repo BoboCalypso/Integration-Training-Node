@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Checkout</title>
+    <link rel='stylesheet' href='/style2.css' type='text/css'>
+</head>
+
+<body>
+    <div
+        style="height: 100vh; width:100%; display:flex; justify-content:center; flex-direction: column; align-items:center">
+        <div id="paypal-button"></div>
+    </div>
+
+    <script src="https://js.braintreegateway.com/web/3.97.1/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.1/js/paypal-checkout.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.1/js/data-collector.min.js"></script>
+    <script>
+
+        braintree.client.create({
+            authorization: "<%= clientToken %>",
+        }, (err, clientInstance) => {
+            if (err) {
+                console.error("Error creating client:", err);
+                return;
+            }
+
+            braintree.paypalCheckout.create({
+                client: clientInstance
+            }, (paypalCheckoutErr, paypalCheckoutInstance) => function (paypalCheckoutErr, paypalCheckoutInstance) {
+                paypalCheckoutInstance.loadPayPalSDK({
+                    vault: true
+                }, function () {
+                    paypal.Buttons({
+                        fundingSource: paypal.FUNDING.PAYPAL,
+
+                        createBillingAgreement: function () {
+                            return paypalCheckoutInstance.createPayment({
+                                flow: 'vault', // Required
+
+                                // The following are optional params
+                                billingAgreementDescription: 'Your agreement description',
+                                enableShippingAddress: true,
+                                shippingAddressEditable: false,
+                                shippingAddressOverride: {
+                                    recipientName: 'Scruff McGruff',
+                                    line1: '1234 Main St.',
+                                    line2: 'Unit 1',
+                                    city: 'Chicago',
+                                    countryCode: 'US',
+                                    postalCode: '60652',
+                                    state: 'IL',
+                                    phone: '123.456.7890'
+                                }
+                            });
+                        },
+
+                        onApprove: function (data, actions) {
+                            return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
+                                // Submit 'payload.nonce' to your server
+                            });
+                        },
+
+                        onCancel: function (data) {
+                            console.log('PayPal payment canceled', JSON.stringify(data, 0, 2));
+                        },
+
+                        onError: function (err) {
+                            console.error('PayPal error', err);
+                        }
+                    }).render('#paypal-button').then(function () {
+                        // The PayPal button will be rendered in an html element with the ID
+                        // 'paypal-button'. This function will be called when the PayPal button
+                        // is set up and ready to be used
+                    });
+
+                });
+
+            });
+        })
+
+    </script>
+</body>
+
+</html>

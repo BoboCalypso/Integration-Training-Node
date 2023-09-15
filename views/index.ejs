@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('partials/head.ejs') %>
+
+<body>
+  <div id="homePage" class="container-fluid">
+    <h1>Braintree Support Integration Training</h1>
+    <hr>
+    <main>
+      <section>
+        <a href="/credentials" class="btn btn-primary">Getting Started</a>
+        <a href="/client-token" id="<% if (!parsedData.credentialsCompleted) { %>locked<% } %>" class="btn btn-primary">
+          Client Token
+        </a>
+        <a href="/drop-in" id="<% if (!parsedData.clientTokenCompleted) { %>locked<% } %>"
+          class="btn btn-primary">Drop-in UI</a>
+        <a href="/transaction" id="<% if (!parsedData.dropinCompleted) { %>locked<% } %>"
+          class="btn btn-primary">Transaction Sale!</a>
+      </section>
+    </main>
+  </div>
+</body>
+
+</html>
